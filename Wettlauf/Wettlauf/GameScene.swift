@@ -17,6 +17,7 @@ class GameScene: SKScene {
 
     override func didMove(to view: SKView) {
         self.physicsWorld.contactDelegate = self
+        self.scaleMode = .aspectFit
 
         guard let backgroundMiddle1 = childNode(withName: "BackgroundMiddle1"),
             let backgroundMiddle2 = childNode(withName: "BackgroundMiddle2") else {
@@ -37,6 +38,7 @@ class GameScene: SKScene {
         backgroundMiddle2.run(repeatAction)
 
         player.physicsBody?.restitution = 0
+        player.physicsBody?.allowsRotation = false
 
         let runFrameAtlas = SKTextureAtlas(named: "run")
         var runFrames = [SKTexture]()
@@ -51,6 +53,8 @@ class GameScene: SKScene {
 
         guard let bottom1 = childNode(withName: "Bottom1"),
             let bottom2 = childNode(withName: "Bottom2"),
+            let top1 = childNode(withName: "Top1"),
+            let top2 = childNode(withName: "Top2"),
             let oneBox = bottom1.children.first else {
                 fatalError()
         }
@@ -66,13 +70,20 @@ class GameScene: SKScene {
                 oneBottomMove,
                 resetBottomMove]))
         bottom1.children.forEach { $0.run(.sequence([oneBottomMove, resetBottomMove, repeatBottomAction])) }
+        top1.children.forEach { $0.run(.sequence([oneBottomMove, resetBottomMove, repeatBottomAction])) }
+
         bottom2.children.forEach { $0.run(repeatBottomAction) }
+        top2.children.forEach { $0.run(repeatBottomAction) }
     }
 
     var jumpTimer: Timer?
     var playerGroundContacts = [SKPhysicsBody]()
     
     func touchDown(atPoint pos : CGPoint) {
+        physicsWorld.gravity.dy *= -1
+        player.yScale *= -1
+        // TODO: reverse character model animation
+        return
         let canJump = !playerGroundContacts.isEmpty
         guard canJump else { return }
         var count = 0
