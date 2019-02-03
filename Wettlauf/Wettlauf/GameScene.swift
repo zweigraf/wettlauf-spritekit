@@ -10,8 +10,14 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene {
-    
+    var player: SKNode {
+        return childNode(withName: "Player")!
+    }
+
+
     override func didMove(to view: SKView) {
+        self.physicsWorld.contactDelegate = self
+
         guard let backgroundMiddle1 = childNode(withName: "BackgroundMiddle1"),
             let backgroundMiddle2 = childNode(withName: "BackgroundMiddle2") else {
             fatalError()
@@ -30,9 +36,7 @@ class GameScene: SKScene {
         backgroundMiddle1.run(.sequence([oneMove, resetMove, repeatAction]))
         backgroundMiddle2.run(repeatAction)
 
-        guard let player = childNode(withName: "Player") else {
-            fatalError()
-        }
+        player.physicsBody?.restitution = 0
 
         let runFrameAtlas = SKTextureAtlas(named: "run")
         var runFrames = [SKTexture]()
@@ -42,7 +46,8 @@ class GameScene: SKScene {
         player.run(.repeatForever(.animate(with: runFrames,
                                            timePerFrame: 0.075,
                                            resize: false,
-                                           restore: true)))
+                                           restore: true)),
+                   withKey: "runanimation")
 
         guard let bottom1 = childNode(withName: "Bottom1"),
             let bottom2 = childNode(withName: "Bottom2"),
@@ -63,16 +68,43 @@ class GameScene: SKScene {
         bottom1.children.forEach { $0.run(.sequence([oneBottomMove, resetBottomMove, repeatBottomAction])) }
         bottom2.children.forEach { $0.run(repeatBottomAction) }
     }
-    
+
+    var jumpTimer: Timer?
+    var playerGroundContacts = [SKPhysicsBody]()
     
     func touchDown(atPoint pos : CGPoint) {
+        let canJump = !playerGroundContacts.isEmpty
+        guard canJump else { return }
+        var count = 0
+        jumpTimer?.invalidate()
+        jumpTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+                guard count < 5 else {
+                    timer.invalidate()
+                    self.jumpTimer = nil
+                    return
+                }
+                count += 1
+                self.player.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 500))
+        }
+        player.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 5000))
 
+        let runFrameAtlas = SKTextureAtlas(named: "jump")
+        var runFrames = [SKTexture]()
+        for i in 1...4 {
+            runFrames.append(runFrameAtlas.textureNamed("jump-\(i)"))
+        }
+        player.removeAction(forKey: "runanimation")
+        player.run(.animate(with: runFrames,
+                            timePerFrame: 0.1,
+                            resize: false,
+                            restore: false),
+                   withKey: "jumpanimation")
     }
     
-    func touchMoved(toPoint pos : CGPoint) {
-    }
+    func touchMoved(toPoint pos : CGPoint) {    }
     
     func touchUp(atPoint pos : CGPoint) {
+        jumpTimer?.invalidate()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -94,5 +126,51 @@ class GameScene: SKScene {
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
+    }
+}
+
+// MARK: - SKPhysicsContactDelegate
+extension GameScene: SKPhysicsContactDelegate {
+    func didBegin(_ contact: SKPhysicsContact) {
+        var grounded = false
+        if contact.bodyA == player.physicsBody {
+            playerGroundContacts.append(contact.bodyB)
+            grounded = true
+        }
+        if contact.bodyB == player.physicsBody {
+            playerGroundContacts.append(contact.bodyA)
+            grounded = true
+        }
+        if grounded {
+            let runFrameAtlas = SKTextureAtlas(named: "run")
+            var runFrames = [SKTexture]()
+            for i in 1...8 {
+                runFrames.append(runFrameAtlas.textureNamed("run-\(i)"))
+            }
+
+            player.removeAction(forKey: "jumpanimation")
+            guard player.action(forKey: "runanimation") == nil else { return }
+            player.run(.repeatForever(.animate(with: runFrames,
+                                               timePerFrame: 0.075,
+                                               resize: false,
+                                               restore: true)),
+                       withKey: "runanimation")
+        }
+    }
+
+    func didEnd(_ contact: SKPhysicsContact) {
+        if contact.bodyA == player.physicsBody {
+            playerGroundContacts.delete(body: contact.bodyB)
+        }
+        if contact.bodyB == player.physicsBody {
+            playerGroundContacts.delete(body: contact.bodyA)
+        }
+    }
+}
+
+extension Array where Element == SKPhysicsBody {
+    mutating func delete(body: SKPhysicsBody) {
+        guard let index = self.firstIndex(of: body) else { return }
+        self.remove(at: index)
     }
 }

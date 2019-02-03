@@ -22,6 +22,7 @@
 		A50481562202F9C8007588ED /* near-buildings-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = A50481542202F9C8007588ED /* near-buildings-bg.png */; };
 		A50481582202FD5C007588ED /* run.atlas in Resources */ = {isa = PBXBuildFile; fileRef = A50481572202FD5C007588ED /* run.atlas */; };
 		A504815A22030494007588ED /* control-box-3.png in Resources */ = {isa = PBXBuildFile; fileRef = A504815922030494007588ED /* control-box-3.png */; };
+		A5A2ABC72207919D0006C52A /* jump.atlas in Resources */ = {isa = PBXBuildFile; fileRef = A5A2ABC62207919D0006C52A /* jump.atlas */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +64,7 @@
 		A50481542202F9C8007588ED /* near-buildings-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "near-buildings-bg.png"; sourceTree = "<group>"; };
 		A50481572202FD5C007588ED /* run.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = run.atlas; sourceTree = "<group>"; };
 		A504815922030494007588ED /* control-box-3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "control-box-3.png"; sourceTree = "<group>"; };
+		A5A2ABC62207919D0006C52A /* jump.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = jump.atlas; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +115,7 @@
 		A504811C2202F60A007588ED /* Wettlauf */ = {
 			isa = PBXGroup;
 			children = (
+				A5A2ABC62207919D0006C52A /* jump.atlas */,
 				A50481572202FD5C007588ED /* run.atlas */,
 				A504811D2202F60A007588ED /* AppDelegate.swift */,
 				A504811F2202F60A007588ED /* GameScene.sks */,
@@ -259,6 +262,7 @@
 				A504815A22030494007588ED /* control-box-3.png in Resources */,
 				A50481582202FD5C007588ED /* run.atlas in Resources */,
 				A50481522202F985007588ED /* skyline-b.png in Resources */,
+				A5A2ABC72207919D0006C52A /* jump.atlas in Resources */,
 				A504812B2202F60C007588ED /* Assets.xcassets in Resources */,
 				A504812E2202F60C007588ED /* LaunchScreen.storyboard in Resources */,
 				A50481552202F9C8007588ED /* buildings-bg.png in Resources */,
