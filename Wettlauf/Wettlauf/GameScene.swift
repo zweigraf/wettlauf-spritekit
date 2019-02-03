@@ -17,6 +17,7 @@ class GameScene: SKScene {
 
     override func didMove(to view: SKView) {
         self.physicsWorld.contactDelegate = self
+        self.physicsWorld.gravity.dy *= 2
         self.scaleMode = .aspectFit
 
         guard let backgroundMiddle1 = childNode(withName: "BackgroundMiddle1"),
